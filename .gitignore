@@ -5,3 +5,7 @@
 package-lock.json
 src/python/build
 src/python/site
+src/react/.env
+src/react/node_modules
+src/react/build
+
