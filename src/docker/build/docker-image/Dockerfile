@@ -3,23 +3,23 @@ ARG STAGING_VERSION=latest
 
 # Creates environment to run Seedsync python code
 # Installs all python dependencies
-FROM python:3.8-slim as seedsync_run_python_env
+FROM python:3.12-slim as seedsync_run_python_env
 
 # Install dependencies
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y \
-        gcc \
-        libssl-dev \
-        lftp \
-        openssh-client \
-        p7zip \
-        p7zip-full \
-        p7zip-rar \
-        bzip2 \
-        curl \
-        libnss-wrapper \
-        libxml2-dev libxslt-dev libffi-dev \
+    gcc \
+    libssl-dev \
+    lftp \
+    openssh-client \
+    p7zip \
+    p7zip-full \
+    p7zip-rar \
+    bzip2 \
+    curl \
+    libnss-wrapper \
+    libxml2-dev libxslt-dev libffi-dev \
     && apt-get clean
 # Fix for patoolib
 # See: https://github.com/wummel/patool/issues/90
@@ -96,6 +96,6 @@ CMD [ \
     "-c", "/config", \
     "--html", "/app/html", \
     "--scanfs", "/app/scanfs" \
-]
+    ]
 
 EXPOSE 8800
