@@ -1,6 +1,7 @@
 # Copyright 2017, Inderpreet Singh, All rights reserved.
 
 import configparser
+import ipaddress
 from typing import Dict
 from io import StringIO
 import collections
@@ -106,13 +107,21 @@ class Checkers:
         return value
 
 
-def is_valid_hostname(hostname):
-    if len(hostname) > 255:
+def is_valid_host(host: str) -> bool:
+    # Check if it's a valid IP address
+    try:
+        ipaddress.ip_address(host)
+        return True
+    except ValueError:
+        pass
+
+    # Check if it's a valid domain name
+    if len(host) > 255:
         return False
-    if hostname[-1] == ".":
-        hostname = hostname[:-1]  # strip exactly one dot from the right, if present
+    if host[-1] == ".":
+        host = host[:-1]  # strip exactly one dot from the right, if present
     allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
-    return all(allowed.match(x) for x in hostname.split("."))
+    return all(allowed.match(x) for x in host.split("."))
 
 
 class InnerConfig(ABC):
