@@ -50,38 +50,38 @@ class TestLftp(unittest.TestCase):
 
         def my_touch(size, *args):
             path = os.path.join(TestLftp.temp_dir, *args)
-            with open(path, 'wb') as f:
-                f.write(bytearray([0xff]*size))
+            with open(path, "wb") as f:
+                f.write(bytearray([0xFF] * size))
 
         def my_mkdir_latin(*args):
-            os.mkdir(os.path.join(TestLftp.temp_dir.encode('latin-1'), *args))
+            os.mkdir(os.path.join(TestLftp.temp_dir.encode("latin-1"), *args))
 
         def my_touch_latin(size, *args):
-            path = os.path.join(TestLftp.temp_dir.encode('latin-1'), *args)
-            with open(path, 'wb') as f:
-                f.write(bytearray([0xff]*size))
+            path = os.path.join(TestLftp.temp_dir.encode("latin-1"), *args)
+            with open(path, "wb") as f:
+                f.write(bytearray([0xFF] * size))
 
         my_mkdir("remote")
         my_mkdir("remote", "a")
-        my_touch(24*1024, "remote", "a", "aa")
-        my_touch(24*1024*1024, "remote", "a", "ab")
+        my_touch(24 * 1024, "remote", "a", "aa")
+        my_touch(24 * 1024 * 1024, "remote", "a", "ab")
         my_mkdir("remote", "b")
         my_mkdir("remote", "b", "ba")
-        my_touch(128*1024, "remote", "b", "ba", "baa")
-        my_touch(128*1024, "remote", "b", "ba", "bab")
-        my_touch(128*1024, "remote", "b", "bb")
+        my_touch(128 * 1024, "remote", "b", "ba", "baa")
+        my_touch(128 * 1024, "remote", "b", "ba", "bab")
+        my_touch(128 * 1024, "remote", "b", "bb")
         my_touch(1234, "remote", "c")
-        my_touch(128*1024, "remote", "d d")
+        my_touch(128 * 1024, "remote", "d d")
         my_mkdir("remote", "e e")
-        my_touch(128*1024, "remote", "e e", "e e a")
+        my_touch(128 * 1024, "remote", "e e", "e e a")
         my_mkdir("remote", "áßç")
-        my_touch(128*1024, "remote", "áßç", "dőÀ")
-        my_touch(256*1024, "remote", "üæÒ")
+        my_touch(128 * 1024, "remote", "áßç", "dőÀ")
+        my_touch(256 * 1024, "remote", "üæÒ")
         my_mkdir_latin(b"remote", b"f\xe9g")
-        my_touch_latin(128*1024, b"remote", b"f\xe9g", b"d\xe9f")
-        my_touch_latin(256*1024, b"remote", b"g\xe9h")
+        my_touch_latin(128 * 1024, b"remote", b"f\xe9g", b"d\xe9f")
+        my_touch_latin(256 * 1024, b"remote", b"g\xe9h")
         my_mkdir_latin(b"remote", b"latin")
-        my_touch_latin(128*1024, b"remote", b"latin", b"d\xe9f")
+        my_touch_latin(128 * 1024, b"remote", b"latin", b"d\xe9f")
         my_mkdir("local")
 
     @classmethod
@@ -103,7 +103,9 @@ class TestLftp(unittest.TestCase):
         self.password = "seedsyncpass"
 
         # Default lftp instance - use key-based login
-        self.lftp = Lftp(address=self.host, port=self.port, user=self.user, password=None)
+        self.lftp = Lftp(
+            address=self.host, port=self.port, user=self.user, password=None
+        )
         self.lftp.set_base_remote_dir_path(self.remote_dir)
         self.lftp.set_base_local_dir_path(self.local_dir)
         self.lftp.set_verbose_logging(True)
@@ -111,7 +113,9 @@ class TestLftp(unittest.TestCase):
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
         handler = logging.StreamHandler(sys.stdout)
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+        formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+        )
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
@@ -193,9 +197,9 @@ class TestLftp(unittest.TestCase):
 
     def test_sftp_connect_program(self):
         self.lftp.sftp_connect_program = "program -a -f"
-        self.assertEqual("\"program -a -f\"", self.lftp.sftp_connect_program)
-        self.lftp.sftp_connect_program = "\"abc -d\""
-        self.assertEqual("\"abc -d\"", self.lftp.sftp_connect_program)
+        self.assertEqual('"program -a -f"', self.lftp.sftp_connect_program)
+        self.lftp.sftp_connect_program = '"abc -d"'
+        self.assertEqual('"abc -d"', self.lftp.sftp_connect_program)
 
     def test_status_empty(self):
         statuses = self.lftp.status()
@@ -682,7 +686,9 @@ class TestLftp(unittest.TestCase):
         # exit the default instance
         self.lftp.exit()
 
-        self.lftp = Lftp(address=self.host, port=self.port, user=self.user, password=self.password)
+        self.lftp = Lftp(
+            address=self.host, port=self.port, user=self.user, password=self.password
+        )
         self.lftp.set_base_remote_dir_path(self.remote_dir)
         self.lftp.set_base_local_dir_path(self.local_dir)
         self.lftp.set_verbose_logging(True)
@@ -690,7 +696,7 @@ class TestLftp(unittest.TestCase):
         # Disable key-based auth
         program = self.lftp.sftp_connect_program
         program = program[:-1]  # remove the end double-quote
-        program += " -oPubkeyAuthentication=no\""
+        program += ' -oPubkeyAuthentication=no"'
         self.lftp.sftp_connect_program = program
 
         self.lftp.queue("a", True)
@@ -717,7 +723,9 @@ class TestLftp(unittest.TestCase):
         # exit the default instance
         self.lftp.exit()
 
-        self.lftp = Lftp(address=self.host, port=self.port, user=self.user, password="wrong password")
+        self.lftp = Lftp(
+            address=self.host, port=self.port, user=self.user, password="wrong password"
+        )
         self.lftp.set_base_remote_dir_path(self.remote_dir)
         self.lftp.set_base_local_dir_path(self.local_dir)
         self.lftp.set_verbose_logging(True)
@@ -726,7 +734,7 @@ class TestLftp(unittest.TestCase):
         # Disable key-based auth
         program = self.lftp.sftp_connect_program
         program = program[:-1]  # remove the end double-quote
-        program += " -oPubkeyAuthentication=no\""
+        program += ' -oPubkeyAuthentication=no"'
         self.lftp.sftp_connect_program = program
 
         self.lftp.queue("a", True)
