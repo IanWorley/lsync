@@ -6,7 +6,8 @@ ARG STAGING_VERSION=latest
 FROM python:3.12-slim as seedsync_run_python_env
 
 # Install dependencies
-RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
+RUN if [ ! -f /etc/apt/sources.list ]; then echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list; fi && \
+    sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y \
     gcc \
