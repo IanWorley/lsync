@@ -101,7 +101,7 @@ class Checkers:
     def string_vaild_hostname(
         cls: T, name: str, value: str
     ) -> str:  ##TODO: make sure that these validates a hostname steal from the frontend
-        if not value or not value.strip() or not is_valid_hostname(value):
+        if not value or not value.strip() or not is_valid_host(value):
             raise ConfigError(
                 "Bad config: {} {} has an invalid entry".format(cls.__name__, name)
             )
