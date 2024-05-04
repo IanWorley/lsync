@@ -409,7 +409,6 @@ class TestController(unittest.TestCase):
             Localization.Error.REMOTE_SERVER_INSTALL.format("Bad hostname: <bad>"),
             str(error.exception),
         )
-        print("Error message: ", str(error.exception))
 
     @timeout_decorator.timeout(20)
     def test_bad_config_remote_username_raises_exception(self):
