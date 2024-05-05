@@ -9,11 +9,11 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     curl \
     python3-distutils \
     binutils
-# Switch to Python 3.8
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-RUN update-alternatives --set python /usr/bin/python3.8
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
-RUN update-alternatives --set python3 /usr/bin/python3.8
+# Switch to Python 3.11
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+RUN update-alternatives --set python /usr/bin/python3.11
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+RUN update-alternatives --set python3 /usr/bin/python3.11
 # Install Poetry
 RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     python get-pip.py --force-reinstall && \
@@ -71,13 +71,17 @@ RUN npm install
 FROM seedsync_build_angular_env as seedsync_build_angular
 COPY src/angular /app
 WORKDIR /app
-RUN node_modules/@angular/cli/bin/ng build -prod --output-path /build/dist/
-
+RUN npm uninstall @types/eventsource
+RUN npm install typescript@3.5.3
+RUN mkdir -p /build/dist && node_modules/@angular/cli/bin/ng build -prod --output-path /build/dist/
 
 # Creates environment to build deb packages
-FROM ubuntu:16.04 as seedsync_build_deb_env
+FROM ubuntu:20.04 as seedsync_build_deb_env
 RUN apt-get update
-RUN apt-get install -y build-essential dh-systemd debhelper
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y tzdata && \
+    echo "Etc/UTC" > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get install -y build-essential dh-systemd debhelper 
 RUN apt-get install -y devscripts
 
 
@@ -85,14 +89,17 @@ RUN apt-get install -y devscripts
 # Output is in /build/dist/
 FROM seedsync_build_deb_env as seedsync_build_deb
 RUN mkdir -p /build/work
+# RUN mkdir -p /build/work/debian
 COPY src/debian /build/work/debian
+RUN cat /build/work/debian/rules
+RUN mkdir -p /build/work/seedsync
 COPY --from=seedsync_build_pyinstaller /build/dist/seedsync /build/work/seedsync
 COPY --from=seedsync_build_scanfs /build/dist/scanfs /build/work/seedsync/
 COPY --from=seedsync_build_angular /build/dist /build/work/seedsync/html
-WORKDIR /build/work
-RUN dpkg-buildpackage -B -uc -us
-RUN ls /build/*.deb && echo "----" && ls /build/work
 
+WORKDIR /build/work
+RUN debuild  -B -uc -us 
+RUN ls /build/*.deb && echo "----" && ls /build/work
 
 # Exports deb package to host
 FROM scratch AS seedsync_build_deb_export

@@ -9,7 +9,6 @@ import collections
 from distutils.util import strtobool
 from abc import ABC
 from typing import Type, TypeVar, Callable, Any
-from regex import match
 
 from .error import AppError
 from .persist import Persist, PersistError
