@@ -61,6 +61,7 @@ docker-image: docker-buildx
 		--tag $${STAGING_REGISTRY}/seedsync/build/scanfs/export:$${STAGING_VERSION} \
 		--cache-to=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/scanfs/export:cache,mode=max \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/scanfs/export:cache \
+		--platform linux/amd64,linux/arm64 \
 		--push \
 		${ROOTDIR}
 
@@ -71,6 +72,7 @@ docker-image: docker-buildx
 		--tag $${STAGING_REGISTRY}/seedsync/build/angular/export:$${STAGING_VERSION} \
 		--cache-to=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/angular/export:cache,mode=max \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/angular/export:cache \
+		--platform linux/amd64,linux/arm64 \
 		--push \
 		${ROOTDIR}
 
@@ -83,7 +85,7 @@ docker-image: docker-buildx
 		--tag $${STAGING_REGISTRY}/seedsync:$${STAGING_VERSION} \
 		--cache-to=type=registry,ref=$${STAGING_REGISTRY}/seedsync:cache,mode=max \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync:cache \
-		--platform linux/amd64,linux/arm64,linux/arm/v7 \
+		--platform linux/amd64,linux/arm64 \
 		--push \
 		${ROOTDIR}
 
@@ -113,7 +115,7 @@ docker-image-release:
 		--build-arg STAGING_REGISTRY=$${STAGING_REGISTRY} \
 		--tag ${RELEASE_REGISTRY}/seedsync:${RELEASE_VERSION} \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync:cache \
-		--platform linux/amd64,linux/arm64,linux/arm/v7 \
+		--platform linux/amd64,linux/arm64\
 		--push \
 		${ROOTDIR}
 

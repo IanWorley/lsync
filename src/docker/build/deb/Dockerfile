@@ -6,6 +6,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     python3.11 \
     python3.11-dev \
     python3.11-distutils \
+    libffi-dev \
     curl \
     python3-distutils \
     binutils
@@ -18,7 +19,7 @@ RUN update-alternatives --set python3 /usr/bin/python3.11
 RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     python get-pip.py --force-reinstall && \
     rm get-pip.py
-RUN pip3 install poetry
+RUN pip3 install poetry 
 RUN poetry config virtualenvs.create false
 COPY src/python/pyproject.toml /app/python/
 COPY src/python/poetry.lock /app/python/

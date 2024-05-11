@@ -60,6 +60,7 @@ FROM ${STAGING_REGISTRY}/seedsync/build/scanfs/export:${STAGING_VERSION} as seed
 FROM seedsync_run_python as seedsync_run
 COPY --from=seedsync_build_angular_export /html /app/html
 COPY --from=seedsync_build_scanfs_export /scanfs /app/scanfs
+RUN mkdir /scripts
 COPY src/docker/build/docker-image/setup_default_config.sh /scripts/
 
 # Disable the known hosts prompt
@@ -87,7 +88,7 @@ RUN mkdir /config && \
 USER seedsync
 
 # First time config setup and replacement
-RUN /scripts/setup_default_config.sh
+RUN /scripts/setup_default_config.sh 
 
 # Must run app inside shell
 # Otherwise the container crashes as soon as a child process exits

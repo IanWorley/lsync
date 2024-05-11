@@ -1,14 +1,13 @@
 # Copyright 2017, Inderpreet Singh, All rights reserved.
 
+import collections
 import configparser
 import ipaddress
 import re
-from typing import Dict
-from io import StringIO
-import collections
-from distutils.util import strtobool
 from abc import ABC
-from typing import Type, TypeVar, Callable, Any
+from distutils.util import strtobool
+from io import StringIO
+from typing import Any, Callable, Dict, Type, TypeVar
 
 from .error import AppError
 from .persist import Persist, PersistError
@@ -95,33 +94,6 @@ class Checkers:
                 )
             )
         return value
-
-    @staticmethod
-    def string_vaild_hostname(
-        cls: T, name: str, value: str
-    ) -> str:  ##TODO: make sure that these validates a hostname steal from the frontend
-        if not value or not value.strip() or not is_valid_host(value):
-            raise ConfigError(
-                "Bad config: {} {} has an invalid entry".format(cls.__name__, name)
-            )
-        return value
-
-
-def is_valid_host(host: str) -> bool:
-    # Check if it's a valid IP address
-    try:
-        ipaddress.ip_address(host)
-        return True
-    except ValueError:
-        pass
-
-    # Check if it's a valid domain name
-    if len(host) > 255:
-        return False
-    if host[-1] == ".":
-        host = host[:-1]  # strip exactly one dot from the right, if present
-    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
-    return all(allowed.match(x) for x in host.split("."))
 
 
 class InnerConfig(ABC):
@@ -278,7 +250,7 @@ class Config(Persist):
 
     class Lftp(IC):
         remote_address = PROP(
-            "remote_address", Checkers.string_vaild_hostname, Converters.null
+            "remote_address", Checkers.string_nonempty, Converters.null
         )
         remote_username = PROP(
             "remote_username", Checkers.string_nonempty, Converters.null

@@ -1,12 +1,13 @@
 # Copyright 2017, Inderpreet Singh, All rights reserved.
 
-from bottle import HTTPResponse
-from urllib.parse import unquote
 from json import dumps, load
+from urllib.parse import unquote
 
-from common import overrides, Config, ConfigError
-from ..web_app import IHandler, WebApp
+from bottle import HTTPResponse
+from common import Config, ConfigError, overrides
+
 from ..serialize import SerializeConfig
+from ..web_app import IHandler, WebApp
 
 
 class ConfigHandler(IHandler):
@@ -26,8 +27,8 @@ class ConfigHandler(IHandler):
         out_json = SerializeConfig.config(self.__config)
         info = load(out_json)
         info["remote_password"] = "********"
-        out_json = dumps(info)
-        return HTTPResponse(body=out_json)
+        data = dumps(info)
+        return HTTPResponse(body=data)
 
     def __handle_set_config_all(self, request: str):
         if not request:
